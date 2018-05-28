@@ -1,0 +1,117 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Memory &amp; Caches</title>
+
+    <link rel="stylesheet" href="reveal.js/css/reveal.css">
+    <link rel="stylesheet" href="reveal.js/css/theme/league.css">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="reveal.js/lib/css/zenburn.css">
+
+    <style>
+        .reveal .slides section .fragment.highlight-current-code {
+            opacity: 1;
+            visibility: inherit;
+        }
+
+        .reveal .slides section .fragment.highlight-current-code.current-fragment {
+            background: #555a5f;
+            color: #ffffff;
+        }
+
+        .no-border {
+            background: none !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        rect.hl {
+            fill: #ff2c2d;
+            fill-opacity: 0.35;
+            stroke: #ff2c2d;
+            stroke-width: 5px;
+        }
+
+    </style>
+
+    <!-- Printing and PDF exports -->
+    <script>
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = window.location.search.match(/print-pdf/gi) ? 'reveal.js/css/print/pdf.css' : 'reveal.js/css/print/paper.css';
+        document.getElementsByTagName('head')[0].appendChild(link);
+    </script>
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <h2>Memory &amp; Caches</h2>
+            <img src="core-memory.jpeg" height="200px">
+            <h3>How they work, and how they affect performance</h3>
+            <h5>Matt Godbolt <a href="https://twitter.com/mattgodbolt">@mattgodbolt</a></h5>
+
+        </section>
+        <section>
+            <h2>Outline</h2>
+            <ul>
+                <li>Physical memory</li>
+                <li>Caches</li>
+                <li>Measuring</li>
+                <li>Virtual memory</li>
+                <li>Multiprocessing</li>
+            </ul>
+        </section>
+        <section
+                data-background-image="RAM-sheep.png"
+                data-background-size="200px"
+                data-background-position="bottom right">
+            <h2>Types of RAM</h2>
+            <ul>
+                <li>Static RAM</li>
+                <li>Dynamic RAM</li>
+                <li>Non-volatile</li>
+            </ul>
+        </section>
+        <section>
+            <h2>1 Bit of Static RAM</h2>
+            <svg width="500" height="400">
+                <image href="cache-ram.png" height="100%" width="100%"/>
+                <rect class="current-visible fragment hl"
+                      x="40%" y="2%"
+                      rx="10px" ry="10px"
+                      width="20%" height="15%"/>
+            </svg>
+        </section>
+    </div>
+</div>
+
+<script src="reveal.js/lib/js/head.min.js"></script>
+<script src="reveal.js/js/reveal.js"></script>
+
+<script>
+    Reveal.initialize({
+        history: true,
+        transition: 'false',
+        slideNumber: true,
+        width: 1280,
+        height: 720,
+        dependencies: [
+            {src: 'reveal.js/plugin/markdown/marked.js'},
+            {src: 'reveal.js/plugin/markdown/markdown.js'},
+            {src: 'reveal.js/plugin/notes/notes.js', async: true},
+            {
+                src: 'reveal.js/plugin/highlight/highlight.js', async: true, callback: function () {
+                    hljs.initHighlightingOnLoad();
+                }
+            }
+        ]
+    });
+</script>
+</body>
+</html>
