@@ -23,6 +23,12 @@
             color: #ffffff;
         }
 
+        div.attribution {
+            margin-top: 1em;
+            font-size: smaller;
+            font-style: italic;
+        }
+
         .no-border {
             background: none !important;
             border: none !important;
@@ -160,6 +166,122 @@
                           d="M430 350 l0 -100 l-50 0"
                     />
                 </svg>
+            </section>
+            <section
+                    data-background-image="cache-ram.png"
+                    data-background-size="300px"
+                    data-background-position="top right">
+                <h2>Static RAM</h2>
+                <ul>
+                    <li>6 transistors per bit</li>
+                    <li>Requires constant power</li>
+                    <li>Logic-level</li>
+                    <li>Repeating layout</li>
+                    <li>&lt;1ns access times</li>
+                    <li class="fragment">Why not make all RAM this way?<br>
+                        <h2 class="fragment"
+                            style="text-align: center; color: darkred;">COST!</h2></li>
+                </ul>
+            </section>
+        </section>
+        <section>
+            <section>
+                <!-- TODO more work here -->
+                <h2>1 Bit of Dynamic RAM</h2>
+                <img src="dynamic-ram.png" width="784px">
+            </section>
+            <section
+                    data-background-image="dynamic-ram-sheep.png"
+                    data-background-size="400px"
+                    data-background-position="bottom right">
+                <h2>Dynamic RAM</h2>
+                <ul>
+                    <li>One transistor per bit</li>
+                    <li>Leaks charge
+                        <ul>
+                            <li>Requires refresh</li>
+                        </ul>
+                    </li>
+                    <li>It's analogue!
+                        <ul>
+                            <li>Needs ADC</li>
+                            <li>Takes time to charge/dischard</li>
+                        </ul>
+                    </li>
+                    <li>External chips</li>
+                </ul>
+            </section>
+            <section>
+                <!-- TODO highlight areas -->
+                <img src="ram-bank.png" class="stretch"/>
+            </section>
+            <section>
+                <h2>Reading from DRAM (short version)</h2>
+                <ul>
+                    <li class="fragment">Precharge bit-lines (<code>t<sub>RP</sub></code> ~18 cycles)</li>
+                    <li class="fragment">Select row (<code>t<sub>RCD</sub></code> ~18 cycles)</li>
+                    <li class="fragment">Sense &amp; latch row data (~8192 bits)
+                        <ul>
+                            <li>Feedback starts recharging cells</li>
+                        </ul>
+                    </li>
+                    <li class="fragment">Select column (<code>CAS</code> ~16 cycles)
+                        <ul>
+                            <li>Data is now available</li>
+                        </ul>
+                    </li>
+                    <li class="fragment">Need to wait for next precharge (t<sub>RAS</sub> ~36 memory cycles)</li>
+                </ul>
+            </section>
+            <section>
+                <h2>DRAM timings &mdash; read</h2>
+                <img src="ram-timings.1.png" class="stretch"/>
+                <div class="attribution">
+                    Image source: <a href="https://lwn.net/Articles/250967/">Ulrich Drepper</a>
+                </div>
+            </section>
+            <section>
+                <h2>DRAM timings &mdash; precharge</h2>
+                <img src="ram-timings.2.png" class="stretch"/>
+                <div class="attribution">
+                    Image source: <a href="https://lwn.net/Articles/250967/">Ulrich Drepper</a>
+                </div>
+            </section>
+            <section
+                    data-background-image="NUMA-node-controller.png"
+                    data-background-size="300px"
+                    data-background-position="top right">
+                <h2>Memory Controller</h2>
+                <ul>
+                    <li>Embedded in CPU</li>
+                    <li>Opens/closes rows</li>
+                    <li>Reorders load/stores</li>
+                    <li>Schedules refreshes (~64ms)</li>
+                    <li>Handles DMA</li>
+                </ul>
+                <div class="attribution">
+                    Image source: <a href="https://lwn.net/Articles/250967/">Ulrich Drepper</a>
+                </div>
+            </section>
+            <section>
+                <h2>Getting DRAM data out</h2>
+                <ul>
+                    <li>DDR4 3200 bus runs at ~1600MHz</li>
+                    <li>64-bits per clock, 2x pumped</li>
+                    <li>1600MHz x 2 x 64 bit<br>
+                        = 25,600MB/sec
+                    </li>
+                </ul>
+            </section>
+            <section>
+                <h2>Access times</h2>
+                <ul>
+                    <li>First word: 10.67ns</li>
+                    <li>Fourth word: 11.67ns</li>
+                    <li>Eighth word: 13.00ns</li>
+                </ul>
+                <h2 class="fragment" style="text-align: center; color: darkred;">Access times can dominate over data
+                    rates</h2>
             </section>
         </section>
     </div>
