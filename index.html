@@ -49,6 +49,13 @@
 </head>
 <body>
 <div class="reveal">
+    <svg>
+        <defs>
+            <marker id='head' orient="auto" markerWidth='2' markerHeight='4' refX='0.1' refY='2'>
+                <path d='M0,0 V4 L2,2 Z' fill="red"/>
+            </marker>
+        </defs>
+    </svg>
     <div class="slides">
         <section>
             <h2>Memory &amp; Caches</h2>
@@ -79,14 +86,81 @@
             </ul>
         </section>
         <section>
-            <h2>1 Bit of Static RAM</h2>
-            <svg width="500" height="400">
-                <image href="cache-ram.png" height="100%" width="100%"/>
-                <rect class="current-visible fragment hl"
-                      x="40%" y="2%"
-                      rx="10px" ry="10px"
-                      width="20%" height="15%"/>
-            </svg>
+            <section>
+                <h2>1 Bit of Static RAM</h2>
+                <svg width="500" height="400" xmlns="http://www.w3.org/2000/svg">
+                    <image href="cache-ram.png" height="100%" width="100%"/>
+                    <rect class="fragment current-visible hl"
+                          data-fragment-index="1"
+                          x="20%" y="12%"
+                          rx="10px" ry="10px"
+                          width="60%" height="85%"/>
+                    <rect class="fragment hl"
+                          data-fragment-index="2"
+                          x="40%" y="0%"
+                          rx="10px" ry="10px"
+                          width="20%" height="15%"/>
+                    <rect class="fragment hl"
+                          data-fragment-index="3"
+                          x="8%" y="35%"
+                          rx="10px" ry="10px"
+                          width="20%" height="15%"/>
+                    <rect class="fragment hl"
+                          data-fragment-index="3"
+                          x="73%" y="35%"
+                          rx="10px" ry="10px"
+                          width="20%" height="18%"/>
+                    <path class="fragment"
+                          data-fragment-index="4"
+                          marker-end='url(#head)'
+                          stroke-width='5'
+                          fill='none' stroke='red'
+                          d="M115 250 l-50 0 l0 100"
+                    />
+                    <path class="fragment"
+                          data-fragment-index="4"
+                          marker-end='url(#head)'
+                          stroke-width='5'
+                          fill='none' stroke='red'
+                          d="M380 250 l50 0 l0 100"
+                    />
+                </svg>
+            </section>
+            <section>
+                <h2>1 Bit of Static RAM</h2>
+                <svg width="500" height="400" xmlns="http://www.w3.org/2000/svg">
+                    <image href="cache-ram.png" height="100%" width="100%"/>
+                    <rect class="fragment hl"
+                          data-fragment-index="1"
+                          x="40%" y="0%"
+                          rx="10px" ry="10px"
+                          width="20%" height="15%"/>
+                    <rect class="fragment hl"
+                          data-fragment-index="2"
+                          x="8%" y="35%"
+                          rx="10px" ry="10px"
+                          width="20%" height="15%"/>
+                    <rect class="fragment hl"
+                          data-fragment-index="2"
+                          x="73%" y="35%"
+                          rx="10px" ry="10px"
+                          width="20%" height="18%"/>
+                    <path class="fragment"
+                          data-fragment-index="3"
+                          marker-end='url(#head)'
+                          stroke-width='8'
+                          fill='none' stroke='red'
+                          d="M65 350 l0 -100 l50 0"
+                    />
+                    <path class="fragment"
+                          data-fragment-index="3"
+                          marker-end='url(#head)'
+                          stroke-width='8'
+                          fill='none' stroke='red'
+                          d="M430 350 l0 -100 l-50 0"
+                    />
+                </svg>
+            </section>
         </section>
     </div>
 </div>
