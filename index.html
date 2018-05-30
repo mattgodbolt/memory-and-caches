@@ -23,6 +23,12 @@
             color: #ffffff;
         }
 
+        .elem {
+            fill: darkblue;
+            stroke-width: 2px;
+            stroke: darkgray;
+        }
+
         div.attribution {
             margin-top: 1em;
             font-size: smaller;
@@ -284,6 +290,232 @@
                     rates</h2>
             </section>
         </section>
+        <section>
+            <section>
+                <h2>Caching</h2>
+                <ul>
+                    <li>Static RAM is small and expensive</li>
+                    <li>Dynamic RAM is cheap, large &amp; slow</li>
+                    <li class="fragment">Use SRAM as cache for DRAM!</li>
+                    <li class="fragment">But how to do this in hardware?</li>
+                    <li class="fragment">Break into "entries" that can be cached</li>
+                </ul>
+            </section>
+            <section data-background-image="sherlock.png"
+                     data-background-size="200px"
+                     data-background-position="bottom right">
+                <h2>Cache entries</h2>
+                <ul>
+                    <li>Organise data in "lines" of 64 bytes
+                        <ul>
+                            <li>Bottom 6 address bits index into this</li>
+                        </ul>
+                    </li>
+                    <li>Use some address bits to choose a "set"
+                        <ul>
+                            <li>e.g. 6 bits for L1 cache; 11 for L2; 13+ for L3</li>
+                        </ul>
+                    </li>
+                    <li>Remaining bits are a "tag"</li>
+                </ul>
+            </section>
+            <section data-background-image="sherlock.png"
+                     data-background-size="200px"
+                     data-background-position="bottom right">
+                <h2>Cache entries</h2>
+                <table class="cache">
+                    <tr>
+                        <td style="width: 500px">63<span style="float:right">6 + <code>S</code> + 1</span></td>
+                        <td style="width: 240px">6 + <code>S</code><span style="float:right">6</span></td>
+                        <td style="width: 100px">5<span style="float:right">0</span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center; background: darkred;">Tag</td>
+                        <td style="text-align: center; background: darkcyan;">Set</td>
+                        <td style="text-align: center; background: darkgreen;">Offset</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">64 - 6 - <code>S</code> bits</td>
+                        <td style="text-align: center;"><code>S</code> bits</td>
+                        <td style="text-align: center;">6 bits</td>
+                    </tr>
+                </table>
+            </section>
+            <section data-background-image="sherlock2.png"
+                     data-background-size="200px"
+                     data-background-position="bottom right">
+                <h2>Cache lookup</h2>
+                <ul>
+                    <li>The <code>S</code> bits choose a set</li>
+                    <li>Each set has a number of "ways" (e.g. 8)</li>
+                    <li>Each way has "tag" and 64-bytes of cache data</li>
+                    <li>Search all the ways for a match with "tag"</li>
+                </ul>
+            </section>
+            <section data-background-image="sherlock2.png"
+                     data-background-size="200px"
+                     data-background-position="bottom right">
+                <h2>Cache lookup</h2>
+                <pre><code class="cpp" data-trim>
+// Cache config parameters:
+constexpr auto NumLineBits = 6u; // 6 bits on Intel CPUs, 64-byte lines
+constexpr auto NumSetBits = 6u;  // 6 bits on Intel L1 caches
+constexpr auto NumWays = 8u;     // 8 ways on Intel L1 cache
+
+constexpr auto LineSize = 1u << NumLineBits;
+struct Line { char data[LineSize]; };
+
+struct Way { uint64_t tag; Line line; };
+
+struct Set { Way ways[NumWays]; };
+
+constexpr auto NumSets = 1u << NumSetBits;
+struct Cache { Set sets[NumSets]; };
+                </code></pre>
+            </section>
+            <section data-background-image="sherlock2.png"
+                     data-background-size="200px"
+                     data-background-position="bottom right">
+                <h2>Cache lookup</h2>
+                <pre><code class="cpp" data-trim data-noescape>
+int Cache::readByte(uint64_t addr) const {
+<div class="fragment highlight-current-code">  constexpr auto LineMask = (1u << NumLineBits) - 1u;
+  auto lineOffset = addr &amp; LineMask;
+</div>
+<div class="fragment highlight-current-code">  constexpr auto SetMask = (1u << NumSetBits) - 1u;
+  const Set &set = sets[(addr &gt;&gt; NumLineBits) &amp; SetMask];
+</div>
+<div class="fragment highlight-current-code">  constexpr auto TagMask = (1u << (NumLineBits + NumSetBits)) - 1u;
+  auto tag = addr &amp; TagMask;
+</div>
+<div class="fragment highlight-current-code">  for (const auto &way : set.ways)
+</div>    if (<span class="fragment highlight-current-code">way.tag == tag</span>) <span
+                        class="fragment highlight-current-code">return way.line.data[lineOffset];
+</span>
+  return -1;
+}
+                </code></pre>
+            </section>
+            <section data-background-image="sherlock2.png"
+                     data-background-size="200px"
+                     data-background-position="bottom right">
+                <h2>We just implemented a bad hash map!</h2>
+                <ul>
+                    <li>Bad hash function</li>
+                    <li>Fixed size bucket chain</li>
+                    <li class="fragment">Why is it this way?</li>
+                </ul>
+            </section>
+            <section>
+                <h2>Caching</h2>
+                <div>
+                    <table class="cache">
+                        <tr>
+                            <td style="text-align: center; background: darkred;">Tag</td>
+                            <td style="text-align: center; background: darkcyan;">Set</td>
+                            <td style="text-align: center; background: darkgreen;">Offset</td>
+                        </tr>
+                    </table>
+                    <!-- TODO animation!! -->
+                </div>
+            </section>
+            <section>
+                <h2>Timings</h2>
+                <h5>Approximate for Sandy Bridge</h5>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Level</th>
+                        <th>Size</th>
+                        <th>Access time</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>L1</td>
+                        <td>32KB</td>
+                        <td>~3 cycles</td>
+                    </tr>
+                    <tr>
+                        <td>L2</td>
+                        <td>256KB</td>
+                        <td>~8 cycles</td>
+                    </tr>
+                    <tr>
+                        <td>L3</td>
+                        <td>10-20MB</td>
+                        <td>~30-40 cycles</td>
+                    </tr>
+                    <tr>
+                        <td>(RAM)</td>
+                        <td></td>
+                        <td>~250 cycles</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </section>
+            <section>Cache hierarchy? Layers? Inclusivity, exclusivity?
+            </section>
+            <section>
+                <h2>Changes soon</h2>
+                Newer Intel chips to have bigger L2s
+                Skylake-X exclusive L3,
+                <!-- TODO -->
+            </section>
+        </section>
+        <section>
+            <section>
+                <h2>Real-world measurements</h2>
+                <ul>
+                    <li>Measured on Westmere X5690<br>32KB / 256KB / 12MB</li>
+                    <li>Timed pointer chasing</li>
+                    <li>Vary:
+                        <ul>
+                            <li>Element size</li>
+                            <li>Total # elements</li>
+                            <li>Order of links</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+            <section>
+                <h2>Real-world measurements</h2>
+                <pre><code class="cpp" data-noescape data-trim>
+                    struct Element {
+                      Element *next;
+                      uint8_t padding[ElementSize];
+                    };
+
+                    Element elements[NumElements];
+                </code></pre>
+            </section>
+            <section ata-autoslide="2000">
+                <h2>Real-world measurements</h2>
+                <h5>Sequential</h5>
+                <svg width="500" height="150">
+                    <rect class="elem" x="0" y="50" width="100" height="40"/>
+                    <rect class="elem" x="100" y="50" width="100" height="40"/>
+                    <rect class="elem" x="200" y="50" width="100" height="40"/>
+                    <rect class="elem" x="300" y="50" width="100" height="40"/>
+                    <rect class="elem" x="400" y="50" width="100" height="40"/>
+                    <path marker-end='url(#head)' class="fragment"
+                          stroke-width='5' fill='none' stroke='red'
+                          d="M5 50 c20 -10, 80 -20, 95 0"/>
+                    <path marker-end='url(#head)' class="fragment"
+                          stroke-width='5' fill='none' stroke='red'
+                          d="M105 50 c20 -10, 80 -20, 95 0"/>
+                    <path marker-end='url(#head)' class="fragment"
+                          stroke-width='5' fill='none' stroke='red'
+                          d="M205 50 c20 -10, 80 -20, 95 0"/>
+                    <path marker-end='url(#head)' class="fragment"
+                          stroke-width='5' fill='none' stroke='red'
+                          d="M305 50 c20 -10, 80 -20, 95 0"/>
+                    <path marker-end='url(#head)' class="fragment"
+                          stroke-width='5' fill='none' stroke='red'
+                          d="M405 90 c20 20, -380 30, -400 0"/>
+                </svg>
+            </section>
+        </section>
     </div>
 </div>
 
@@ -300,6 +532,7 @@
         dependencies: [
             {src: 'reveal.js/plugin/markdown/marked.js'},
             {src: 'reveal.js/plugin/markdown/markdown.js'},
+            {src: 'reveal.js-d3/reveald3.js'},
             {src: 'reveal.js/plugin/notes/notes.js', async: true},
             {
                 src: 'reveal.js/plugin/highlight/highlight.js', async: true, callback: function () {
