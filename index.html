@@ -31,7 +31,7 @@
         }
 
         section .row {
-            margin: 0.15em 0em;
+            margin: 0.15em 0;
         }
 
         section .row *[class*='col-'] {
@@ -40,7 +40,7 @@
             left: 0;
             float: left;
             min-height: 1px;
-            padding: 0em 0.15em;
+            padding: 0 0.15em;
         }
 
         .col-50 {
@@ -297,11 +297,13 @@
                         </svg>
                     </div>
                     <div class="col-50">
-                        <li class="fragment" data-fragment-index="1">Precharge</li>
-                        <li class="fragment" data-fragment-index="2">Row select</li>
-                        <li class="fragment" data-fragment-index="3">Sense</li>
-                        <li class="fragment" data-fragment-index="4">Column select</li>
-                        <li class="fragment" data-fragment-index="5">Data ready</li>
+                        <ul>
+                            <li class="fragment" data-fragment-index="1">Precharge</li>
+                            <li class="fragment" data-fragment-index="2">Row select</li>
+                            <li class="fragment" data-fragment-index="3">Sense</li>
+                            <li class="fragment" data-fragment-index="4">Column select</li>
+                            <li class="fragment" data-fragment-index="5">Data ready</li>
+                        </ul>
                     </div>
                 </div>
             </section>
