@@ -23,6 +23,30 @@
             color: #ffffff;
         }
 
+        section .row:before,
+        section .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        section .row {
+            margin: 0.15em 0em;
+        }
+
+        section .row *[class*='col-'] {
+            box-sizing: border-box;
+            position: relative;
+            left: 0;
+            float: left;
+            min-height: 1px;
+            padding: 0em 0.15em;
+        }
+
+        .col-50 {
+            width: 50%;
+        }
+
         .elem {
             fill: darkblue;
             stroke-width: 2px;
@@ -218,10 +242,6 @@
                 </ul>
             </section>
             <section>
-                <!-- TODO highlight areas -->
-                <img src="ram-bank.png" class="stretch"/>
-            </section>
-            <section>
                 <h2>Reading from DRAM (short version)</h2>
                 <ul>
                     <li class="fragment">Precharge bit-lines (<code>t<sub>RP</sub></code> ~18 cycles)</li>
@@ -238,6 +258,52 @@
                     </li>
                     <li class="fragment">Need to wait for next precharge (t<sub>RAS</sub> ~36 memory cycles)</li>
                 </ul>
+            </section>
+            <section>
+                <div class="row">
+                    <div class="col-50">
+                        <svg height="580" width="394">
+                            <image href="ram-bank.png" height="100%" width="100%"/>
+                            <rect class="fragment hl current-visible"
+                                  data-fragment-index="1"
+                                  x="22%" y="65%"
+                                  rx="10px" ry="10px"
+                                  width="77.5%" height="7.5%"/>
+                            <rect class="fragment hl current-visible"
+                                  data-fragment-index="2"
+                                  x="22%" y="58%"
+                                  rx="10px" ry="10px"
+                                  width="77.5%" height="7.5%"/>
+                            <rect class="fragment hl current-visible"
+                                  data-fragment-index="2"
+                                  x="17%" y="0%"
+                                  rx="10px" ry="10px"
+                                  width="8%" height="48%"/>
+                            <rect class="fragment hl current-visible"
+                                  data-fragment-index="3"
+                                  x="21%" y="65%"
+                                  rx="10px" ry="10px"
+                                  width="64%" height="20%"/>
+                            <rect class="fragment hl current-visible"
+                                  data-fragment-index="4"
+                                  x="21%" y="85%"
+                                  rx="10px" ry="10px"
+                                  width="64%" height="7%"/>
+                            <rect class="fragment hl current-visible"
+                                  data-fragment-index="5"
+                                  x="43%" y="90%"
+                                  rx="10px" ry="10px"
+                                  width="22%" height="10%"/>
+                        </svg>
+                    </div>
+                    <div class="col-50">
+                        <li class="fragment" data-fragment-index="1">Precharge</li>
+                        <li class="fragment" data-fragment-index="2">Row select</li>
+                        <li class="fragment" data-fragment-index="3">Sense</li>
+                        <li class="fragment" data-fragment-index="4">Column select</li>
+                        <li class="fragment" data-fragment-index="5">Data ready</li>
+                    </div>
+                </div>
             </section>
             <section>
                 <h2>DRAM timings &mdash; read</h2>
