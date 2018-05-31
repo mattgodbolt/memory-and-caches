@@ -628,8 +628,86 @@ int Cache::readByte(uint64_t addr) const {
         </section>
         <section>
             <section>
-                
+                <h2>Multiprocessing</h2>
+                <ul>
+                    <li>Bus between CPUs fast...but not that fast</li>
+                    <li>TLB, L1, L2 local to a core (hyperthread siblings)</li>
+                    <li>L3 shared by all cores on a socket</li>
+                    <li>How to ensure consistency?</li>
+                </ul>
             </section>
+            <section>
+                <h2>MESI</h2>
+                <ul>
+                    <li>Modified &mdash; exclusive, dirty</li>
+                    <li>Exclusive &mdash; exclusive, non-dirty</li>
+                    <li>Shared &mdash; <em>possibly</em> shared, non-dirty</li>
+                    <li>Invalid</li>
+                </ul>
+            </section>
+            <section>
+                <h2>MESI</h2>
+                <img src="MESI.png" class="stretch">
+            </section>
+            <section>
+                <h2>MESI</h2>
+                <ul>
+                    <li>Avoid RFOs</li>
+                    <li>Minimum transaction is cache line</li>
+                    <li>Pad shared data to cache line size</li>
+                </ul>
+            </section>
+            <section
+                    data-background-image="mahnamahna.png"
+                    data-background-size="300px"
+                    data-background-position="bottom right">
+                <h2>NUMA</h2>
+                <ul>
+                    <li>Most high end machines are NUMA</li>
+                    <li>Each socket has local RAM</li>
+                    <li>Accessing remote RAM slower</li>
+                </ul>
+                <br>
+                <img src="numa.png" class="stretch">
+            </section>
+        </section>
+        <section>
+            <section>
+                <h2>What can we do?</h2>
+            </section>
+            <section>
+                <h2>Make good use of cache</h2>
+                <ul>
+                    <li>Keep data small</li>
+                    <li>Prefer linear scans</li>
+                    <li>Avoid chasing pointers</li>
+                </ul>
+                <div class="fragment">
+                    <p>Maybe...</p>
+                    <ul>
+                        <li>Prefetch</li>
+                        <li>Bypass cache</li>
+                    </ul>
+                </div>
+            </section>
+            <section>
+                <h2>Allocate carefully</h2>
+                <ul>
+                    <li>Allocate from right NUMA node</li>
+                    <li>Use huge pages for giant slabs</li>
+                </ul>
+            </section>
+        </section>
+        <section>
+            <h2>Thanks!</h2>
+
+            <h4>Questions?</h4>
+
+            <div class="attribution">
+                Based on: "What Every Programmer Should Know About memory"<br>
+                by Ulrich Drepper<br>
+                <a href="https://www.akkadia.org/drepper/cpumemory.pdf">https://www.akkadia.org/drepper/cpumemory.pdf</a>
+            </div>
         </section>
     </div>
 </div>
