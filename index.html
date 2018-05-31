@@ -489,7 +489,7 @@ int Cache::readByte(uint64_t addr) const {
                     Element elements[NumElements];
                 </code></pre>
             </section>
-            <section ata-autoslide="2000">
+            <section>
                 <h2>Real-world measurements</h2>
                 <h5>Sequential</h5>
                 <svg width="500" height="150">
@@ -514,6 +514,121 @@ int Cache::readByte(uint64_t addr) const {
                           stroke-width='5' fill='none' stroke='red'
                           d="M405 90 c20 20, -380 30, -400 0"/>
                 </svg>
+            </section>
+            <section>
+                <h2>Result: Sequential reads</h2>
+                <img src="sequential_reads_16b.svg" class="stretch">
+            </section>
+            <section>
+                <h2>Discussion</h2>
+                <img src="sequential_reads_16b.svg" class="stretch">
+                <br>
+                <ul>
+                    <li>Why so fast?</li>
+                    <li class="fragment">Automatic prefetching</li>
+                    <li class="fragment">Cache spots patterns in misses</li>
+                </ul>
+            </section>
+            <section>
+                <h2>Result: Sequential reads</h2>
+                <img src="sequential_reads.svg" class="stretch">
+            </section>
+            <section>
+                <h2>Discussion</h2>
+                <img src="sequential_reads.svg" class="stretch">
+                <br>
+                <ul>
+                    <li>8192 byte stride?
+                        <ul class="fragment">
+                            <li>L3 cache is 12-way 12288-set associative</li>
+                            <li>1024, 2048, 4096 divide into 12288</li>
+                            <li>8192 doesn't</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+            <section>
+                <h2>Sequential vs Random Reads</h2>
+                <img src="sequential_reads_vs_random_reads.svg" class="stretch">
+            </section>
+            <section>
+                <h2>Discussion</h2>
+                <img src="sequential_reads_vs_random_reads.svg" class="stretch"><br>
+                <ul>
+                    <li>Why worse than 250 cycles?
+                        <ul class="fragment">
+                            <li>Prefetching can hurt</li>
+                        </ul>
+                    </li>
+                    <li>Linear scan 5x faster</li>
+                    <li><code>prefetch</code> is available
+                        <ul class="fragment">
+                            <li>Hard to get right</li>
+                            <li>Overrides Critical Word Load</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+            <section>
+                <h2>Writes vs Reads</h2>
+                <img src="reads_vs_writes.svg" class="stretch">
+            </section>
+            <section>
+                <h2>Writes</h2>
+                <img src="sequential_writes.svg" class="stretch">
+            </section>
+        </section>
+        <section>
+            <section>
+                <h2>Virtual memory</h2>
+                <ul>
+                    <li>How do virtual address fit into this?</li>
+                    <li>Page tables require 4 reads to walk:</li>
+                </ul>
+                <img src="page-tables.png" class="stretch">
+            </section>
+            <section>
+                <h2>TLBs</h2>
+                <ul>
+                    <li>Translation cache, two-level 4-way (Sandy Bridge)</li>
+                    <li>L1: 64 4KB page / 32 2MB page</li>
+                    <li>L2: 512 4KB page</li>
+                </ul>
+            </section>
+            <section>
+                <h2>Virtual Memory &amp; Caching</h2>
+                <ul>
+                    <li>L1 is fast &amp; small
+                        <ul>
+                            <li>Physically tagged, virtually indexed</li>
+                            <li>64 sets: bits 11:6 of address</li>
+                            <li>DTLB read in parallel with cache fetch
+                                <div class="fragment" style="float:right; margin-left: 10px">
+                                    <img class="no-border" height="80px" src="meltdown.min.svg">
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>L2 and above
+                        <ul>
+                            <li>Caches physical address</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+            <section>
+                <h2>Example with Huge Pages</h2>
+                <img src="reads_small_vs_huge_pages.svg" class="stretch">
+            </section>
+            <section>
+                <h2>More on Huge Pages</h2>
+                <img src="reads_small_vs_huge_pages_4K.svg" class="stretch">
+                <br><span class="fragment">~15 cycle improvement</span>
+            </section>
+        </section>
+        <section>
+            <section>
+                
             </section>
         </section>
     </div>
