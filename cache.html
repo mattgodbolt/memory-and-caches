@@ -22,6 +22,15 @@
             fill: none;
         }
 
+        .mux-box {
+            stroke-width: 2px;
+            stroke: white;
+        }
+
+        path {
+            stroke-linejoin: round;
+        }
+
         .way {
             fill: none;
         }
@@ -60,8 +69,15 @@
 
 <script src="d3.v5.min.js"></script>
 <script>
+    let doc = {
+        highlightedSet: -1,
+        setPartHighlighted: false
+    };
+
     const numSets = 4;
     const numWays = 6;
+
+    const trans = d3.transition().duration(300);
 
     const width = 1200, height = 800;
     const svg = d3.select("body").append("svg")
@@ -97,18 +113,17 @@
     const setWidth = muxWidth / numSets;
     // noinspection JSSuspiciousNameCombination
     const setHeight = setWidth;
-    let highlightedSet = 1;
 
     function updateSets(root) {
         const setData = [];
         for (let i = 0; i < numSets; ++i)
             setData[i] = {
-                highlight: i === highlightedSet,
-                ways: Array(numWays).fill(i === highlightedSet)
+                highlight: i === doc.highlightedSet,
+                ways: Array(numWays).fill(i === doc.highlightedSet)
             };
         const sets = root.selectAll('.set')
             .data(setData);
-        sets.enter()
+        const lines = sets.enter()
             .append("g")
             .attr("class", "set")
             .attr("transform", (d, i) => `translate(${setWidth * i}, ${muxHeight})`)
@@ -118,6 +133,10 @@
             .attr("y1", 0)
             .attr("y2", muxLineHeight)
             .attr('marker-end', 'url(#head)');
+        lines.merge(sets.select('line'))
+            .transition(trans)
+            .attr('stroke', d => d.highlight ? 'darkcyan' : 'white')
+            .attr('stroke-width', d => d.highlight ? 4 : 2);
         sets.exit().remove();
 
         const ways = sets
@@ -131,8 +150,7 @@
             .attr("y", (d, i) => muxLineHeight + i * setHeight)
             .attr("width", setWidth)
             .attr("height", setHeight);
-        const t = d3.transition().duration(300);
-        rects.merge(ways).transition(t)
+        rects.merge(ways).transition(trans)
             .style('fill', d => d ? 'darkcyan' : 'black');
     }
 
@@ -140,9 +158,8 @@
         const mux = svg.append("g")
             .attr("transform", `translate(${x}, ${y})`);
         mux.append("path")
-            .attr("class", "mux")
-            .attr("d", `M${muxInTop} 0 l${muxWidth - 2 * muxInTop} 0 l${muxInTop} ${muxHeight} l${-muxWidth} 0 Z`)
-            .attr("fill", "none");
+            .attr("class", "mux-box")
+            .attr("d", `M${muxInTop} 0 l${muxWidth - 2 * muxInTop} 0 l${muxInTop} ${muxHeight} l${-muxWidth} 0 Z`);
         mux.append("text")
             .attr("x", muxWidth / 2)
             .attr("y", muxHeight / 2)
@@ -173,12 +190,11 @@
     const boxToMuxGap = muxTop - boxHeight;
     setLines
         .append("path")
-        .attr("d", `M0 ${boxHeight} l0 ${boxToMuxGap / 2} H${-width / 2 + muxWidth / 2} H${width / 2 - muxWidth / 2}`);
-    setLines.append("path")
-        .attr("d", `M${-width / 2 + muxWidth / 2} ${boxHeight + boxToMuxGap / 2} v${boxToMuxGap / 2}`)
+        .attr("d", `M0 ${boxHeight} v ${boxToMuxGap / 2} H${-width / 2 + muxWidth / 2} v${boxToMuxGap / 2}`)
         .attr("marker-end", "url(#head)");
-    setLines.append("path")
-        .attr("d", `M${width / 2 - muxWidth / 2} ${boxHeight + boxToMuxGap / 2} v${boxToMuxGap / 2}`)
+    setLines
+        .append("path")
+        .attr("d", `M0 ${boxHeight + boxToMuxGap / 2} H${width / 2 - muxWidth / 2} v${boxToMuxGap / 2}`)
         .attr("marker-end", "url(#head)");
 
     // Comparator and data lines
@@ -237,14 +253,22 @@
         .attr("d", `M${orMid} ${dataBottom} v50`)
         .attr("marker-end", "url(#head)");
 
-    function update(doc) {
+    function update() {
         updateSets(tagMux);
         updateSets(dataMux);
+
+        setLines.selectAll("path")
+            .transition(trans)
+            .attr("stroke-width", doc.setPartHighlighted ? 6 : 2)
+            .attr("stroke", doc.setPartHighlighted ? "darkcyan" : "white");
+
+        d3.selectAll(".mux-box")
+            .transition(trans)
+            .attr("fill", doc.setPartHighlighted ? "darkcyan" : "black");
     }
 
-    update({
-        highlights: {}
-    });
+    update();
+
 </script>
 </body>
 </html>
