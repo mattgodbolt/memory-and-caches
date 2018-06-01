@@ -1,0 +1,194 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Memory &amp; Caches</title>
+
+    <link rel="stylesheet" href="reveal.js/css/reveal.css">
+    <link rel="stylesheet" href="reveal.js/css/theme/league.css">
+
+    <style>
+        .box {
+            text-anchor: middle;
+            font: bold 26px Serif;
+            fill: white;
+        }
+
+        .mux, .set, .tag {
+            stroke-width: 2px;
+            stroke: white;
+            fill: none;
+        }
+
+        .way {
+            fill: none;
+        }
+
+        text.mux {
+            stroke: none;
+            text-anchor: middle;
+            font: bold 26px Serif;
+            fill: white;
+            alignment-baseline: center;
+        }
+
+        text.comparator {
+            stroke: none;
+            text-anchor: middle;
+            font: bold 16px Serif;
+            fill: white;
+            alignment-baseline: center;
+        }
+    </style>
+
+</head>
+<body>
+<svg width="0" height="0">
+    <defs>
+        <marker id='head' orient="auto" markerWidth='3' markerHeight='6' refX='3' refY='3'>
+            <path d='M0,0 V6 L3,3 Z' fill="white"/>
+        </marker>
+    </defs>
+</svg>
+
+<script src="d3.v5.min.js"></script>
+<script>
+    const numSets = 4;
+    const numWays = 8;
+
+    const width = 1200, height = 800;
+    const svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", `translate(${width / 2}, 0)`);
+    const boxWidth = 150;
+    const boxHeight = 40;
+
+    function box(name, colour, x, y) {
+        const box = svg.append("g")
+            .attr("transform", `translate(${x}, ${y})`);
+        box.append("rect")
+            .attr("width", boxWidth)
+            .attr("height", boxHeight)
+            .attr("fill", colour)
+            .attr("stroke-width", "2")
+            .attr("stroke", "white");
+        box.append("text")
+            .attr("x", boxWidth / 2)
+            .attr("y", boxHeight / 2)
+            .attr("dy", "0.35em")
+            .attr("class", "box")
+            .text(name);
+        return box;
+    }
+
+    const muxWidth = 200;
+    const muxInTop = 30;
+    const muxHeight = 40;
+    const muxLineHeight = 25;
+    const setWidth = muxWidth / numSets;
+    const setHeight = setWidth;
+
+    function muxAndSets(x, y, name) {
+        const mux = svg.append("g")
+            .attr("transform", `translate(${x}, ${y})`);
+        mux.append("path")
+            .attr("class", "mux")
+            .attr("d", `M${muxInTop} 0 l${muxWidth - 2 * muxInTop} 0 l${muxInTop} ${muxHeight} l${-muxWidth} 0 Z`)
+            .attr("fill", "none");
+        mux.append("text")
+            .attr("x", muxWidth / 2)
+            .attr("y", muxHeight / 2)
+            .attr("class", "mux")
+            .attr("dy", "0.35em")
+            .text("MUX");
+        mux.append("text")
+            .attr("x", muxWidth / 2)
+            .attr("y", muxHeight / 2 + muxLineHeight + (numWays + 1) * setHeight)
+            .attr("class", "mux")
+            .attr("dy", "0.35em")
+            .text(name);
+
+        for (let i = 0; i < numSets; ++i) {
+            const setX = setWidth * i;
+            const set = mux.append("g")
+                .attr("transform", `translate(${setX}, ${muxHeight})`)
+                .attr("class", "set");
+            set.append("line")
+                .attr("x1", setWidth / 2)
+                .attr("x2", setWidth / 2)
+                .attr("y1", 0)
+                .attr("y2", muxLineHeight)
+                .attr('marker-end', 'url(#head)');
+            for (let j = 0; j < numWays; ++j) {
+                set.append("g")
+                    .attr("transform", `translate(0, ${muxLineHeight + j * setHeight})`)
+                    .append("rect")
+                    .attr("width", setWidth)
+                    .attr("height", setHeight)
+                    .attr("class", "way");
+            }
+        }
+    }
+
+    const allBoxWidth = 3 * boxWidth;
+    const tag = box("Tag", "darkred", -allBoxWidth / 2, 0);
+    const set = box("Set", "darkcyan", -allBoxWidth / 2 + boxWidth, 0);
+    const offset = box("Offset", "green", -allBoxWidth / 2 + boxWidth * 2, 0);
+
+    const muxTop = 100;
+    muxAndSets(-width / 2, muxTop, "Tag");
+    muxAndSets(width / 2 - muxWidth, muxTop, "Data");
+
+    const setLines = svg.append("g").attr("class", "set");
+    const boxToMuxGap = muxTop - boxHeight;
+    setLines
+        .append("path")
+        .attr("d", `M0 ${boxHeight} l0 ${boxToMuxGap / 2} H${-width / 2 + muxWidth / 2} H${width / 2 - muxWidth / 2}`);
+    setLines.append("path")
+        .attr("d", `M${-width / 2 + muxWidth / 2} ${boxHeight + boxToMuxGap / 2} v${boxToMuxGap / 2}`)
+        .attr("marker-end", "url(#head)");
+    setLines.append("path")
+        .attr("d", `M${width / 2 - muxWidth / 2} ${boxHeight + boxToMuxGap / 2} v${boxToMuxGap / 2}`)
+        .attr("marker-end", "url(#head)");
+
+    // Comparator lines
+    const tagLines = svg.append("g").attr("class", "tag");
+    const muxEdgeX = -width / 2 + muxWidth;
+    const allComparatorSpace = (-muxEdgeX) - 100;
+    const comparatorWidth = 80;
+    const comparatorHeight = setHeight * 0.8;
+    const comparatorOverlap = (allComparatorSpace - comparatorWidth) / numWays;
+    for (let j = 0; j < numWays; ++j) {
+        const tagComplex = tagLines.append("g");
+        const tagCentreY = muxTop + muxHeight + muxLineHeight + j * setHeight + setHeight / 2;
+        const compLeft = muxEdgeX + 100 + comparatorOverlap * j;
+        tagComplex.append("path")
+            .attr("d", `M${muxEdgeX} ${tagCentreY} H${compLeft}`)
+            .attr("marker-end", "url(#head)");
+        const comparator = tagComplex.append("g")
+            .attr("transform", `translate(${compLeft},${tagCentreY - comparatorHeight / 2})`);
+        comparator.append("rect")
+            .attr("width", comparatorWidth)
+            .attr("height", comparatorHeight);
+        comparator.append("text")
+            .attr("x", comparatorWidth / 2)
+            .attr("y", comparatorHeight / 2)
+            .attr("class", "comparator")
+            .attr("dy", "0.35em")
+            .text("Comp");
+
+    }
+
+    function update(doc) {
+    }
+
+    update({
+        highlights: {}
+    });
+</script>
+</body>
+</html>
