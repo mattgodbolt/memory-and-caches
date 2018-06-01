@@ -26,6 +26,10 @@
             fill: none;
         }
 
+        .highlight rect.way {
+            fill: darkcyan;
+        }
+
         text.mux {
             stroke: none;
             text-anchor: middle;
@@ -41,6 +45,7 @@
             fill: white;
             alignment-baseline: center;
         }
+
     </style>
 
 </head>
@@ -92,6 +97,47 @@
     const setWidth = muxWidth / numSets;
     // noinspection JSSuspiciousNameCombination
     const setHeight = setWidth;
+    let highlightedSet = -1;
+
+    function updateSets(root) {
+        const setData = [];
+        for (let i = 0; i < numSets; ++i)
+            setData[i] = i === highlightedSet;
+        const wayData = [];
+        for (let i = 0; i < numWays; ++i)
+            wayData[i] = false;
+        const sets = root.selectAll('.set')
+            .data(setData);
+        const group = sets
+            .enter()
+            .append("g")
+            .attr("class", "set")
+            .attr("transform", (d, i) => `translate(${setWidth * i}, ${muxHeight})`);
+        sets.exit().remove();
+        group
+            .append("line")
+            .attr("x1", setWidth / 2)
+            .attr("x2", setWidth / 2)
+            .attr("y1", 0)
+            .attr("y2", muxLineHeight)
+            .attr('marker-end', 'url(#head)');
+        group
+            .selectAll(".way")
+            .data(wayData)
+            .enter().append("g")
+            .attr("transform", (d, i) => `translate(0, ${muxLineHeight + i * setHeight})`)
+            .append("rect")
+            .attr("width", setWidth)
+            .attr("height", setHeight)
+            .attr("class", "way");
+
+        sets
+            .transition()
+            .attr("class", (d) => {
+                console.log(d);
+                return d ? "set highlight" : "set";
+            });
+    }
 
     function muxAndSets(x, y, name) {
         const mux = svg.append("g")
@@ -113,26 +159,8 @@
             .attr("dy", "0.35em")
             .text(name);
 
-        for (let i = 0; i < numSets; ++i) {
-            const setX = setWidth * i;
-            const set = mux.append("g")
-                .attr("transform", `translate(${setX}, ${muxHeight})`)
-                .attr("class", "set");
-            set.append("line")
-                .attr("x1", setWidth / 2)
-                .attr("x2", setWidth / 2)
-                .attr("y1", 0)
-                .attr("y2", muxLineHeight)
-                .attr('marker-end', 'url(#head)');
-            for (let j = 0; j < numWays; ++j) {
-                set.append("g")
-                    .attr("transform", `translate(0, ${muxLineHeight + j * setHeight})`)
-                    .append("rect")
-                    .attr("width", setWidth)
-                    .attr("height", setHeight)
-                    .attr("class", "way");
-            }
-        }
+        updateSets(mux);
+        return mux;
     }
 
     const allBoxWidth = 3 * boxWidth;
@@ -141,8 +169,8 @@
     const offset = box("Offset", "green", -allBoxWidth / 2 + boxWidth * 2, 0);
 
     const muxTop = 100;
-    muxAndSets(-width / 2, muxTop, "Tag");
-    muxAndSets(width / 2 - muxWidth, muxTop, "Data");
+    const tagMux = muxAndSets(-width / 2, muxTop, "Tag");
+    const dataMux = muxAndSets(width / 2 - muxWidth, muxTop, "Data");
 
     const setLines = svg.append("g").attr("class", "set");
     const boxToMuxGap = muxTop - boxHeight;
@@ -170,7 +198,7 @@
     const orGateHeight = setHeight * 0.5;
     const dataBottom = muxTop + muxHeight + muxLineHeight + (numWays + 1) * setHeight;
     const orGateOverlap = (allElemSpace - orGateWidth) / numWays;
-    const orMid = dataEdgeX - gapToFirstElem - orGateWidth - orGateOverlap * numWays/2;
+    const orMid = dataEdgeX - gapToFirstElem - orGateWidth - orGateOverlap * numWays / 2;
 
     for (let j = 0; j < numWays; ++j) {
         const tagComplex = tagLines.append("g");
@@ -213,6 +241,8 @@
         .attr("marker-end", "url(#head)");
 
     function update(doc) {
+        updateSets(tagMux);
+        updateSets(dataMux);
     }
 
     update({
