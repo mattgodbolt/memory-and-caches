@@ -56,7 +56,7 @@
 <script src="d3.v5.min.js"></script>
 <script>
     const numSets = 4;
-    const numWays = 8;
+    const numWays = 6;
 
     const width = 1200, height = 800;
     const svg = d3.select("body").append("svg")
@@ -90,6 +90,7 @@
     const muxHeight = 40;
     const muxLineHeight = 25;
     const setWidth = muxWidth / numSets;
+    // noinspection JSSuspiciousNameCombination
     const setHeight = setWidth;
 
     function muxAndSets(x, y, name) {
@@ -155,17 +156,26 @@
         .attr("d", `M${width / 2 - muxWidth / 2} ${boxHeight + boxToMuxGap / 2} v${boxToMuxGap / 2}`)
         .attr("marker-end", "url(#head)");
 
-    // Comparator lines
+    // Comparator and data lines
     const tagLines = svg.append("g").attr("class", "tag");
     const muxEdgeX = -width / 2 + muxWidth;
-    const allComparatorSpace = (-muxEdgeX) - 100;
+    const dataEdgeX = width / 2 - muxWidth;
+    const gapToFirstElem = 100;
+    const allElemSpace = (-muxEdgeX) - gapToFirstElem;
     const comparatorWidth = 80;
     const comparatorHeight = setHeight * 0.8;
-    const comparatorOverlap = (allComparatorSpace - comparatorWidth) / numWays;
+    const comparatorOverlap = (allElemSpace - comparatorWidth) / numWays;
+    const orGateDown = 15;
+    const orGateWidth = 50;
+    const orGateHeight = setHeight * 0.5;
+    const dataBottom = muxTop + muxHeight + muxLineHeight + (numWays + 1) * setHeight;
+    const orGateOverlap = (allElemSpace - orGateWidth) / numWays;
+    const orMid = dataEdgeX - gapToFirstElem - orGateWidth - orGateOverlap * numWays/2;
+
     for (let j = 0; j < numWays; ++j) {
         const tagComplex = tagLines.append("g");
         const tagCentreY = muxTop + muxHeight + muxLineHeight + j * setHeight + setHeight / 2;
-        const compLeft = muxEdgeX + 100 + comparatorOverlap * j;
+        const compLeft = muxEdgeX + gapToFirstElem + comparatorOverlap * j;
         tagComplex.append("path")
             .attr("d", `M${muxEdgeX} ${tagCentreY} H${compLeft}`)
             .attr("marker-end", "url(#head)");
@@ -181,7 +191,26 @@
             .attr("dy", "0.35em")
             .text("Comp");
 
+        const orLeft = dataEdgeX - gapToFirstElem - orGateWidth - orGateOverlap * j;
+        const orGateConnector = 10;
+        const orComplex = tagLines.append("g");
+        orComplex.append("path")
+            .attr("d", `M${dataEdgeX} ${tagCentreY} H${orLeft + orGateWidth - orGateConnector} v${orGateDown}`)
+            .attr("marker-end", "url(#head)");
+        orComplex.append("path")
+            .attr("d", `M${compLeft + comparatorWidth} ${tagCentreY} H${orLeft + orGateConnector} v${orGateDown}`)
+            .attr("marker-end", "url(#head)");
+        const orTop = orGateDown + tagCentreY;
+        const curveness = orGateHeight / 0.78;
+        orComplex.append("path")
+            .attr("d", `M${orLeft} ${orTop} h${orGateWidth} c0 ${curveness} ${-orGateWidth} ${curveness} ${-orGateWidth} 0`);
+        orComplex.append("path")
+            .attr("d", `M${orLeft + orGateWidth / 2} ${orTop + orGateHeight} V${dataBottom} H${orMid}`);
     }
+    const outputComplex = tagLines.append("g")
+        .append("path")
+        .attr("d", `M${orMid} ${dataBottom} v50`)
+        .attr("marker-end", "url(#head)");
 
     function update(doc) {
     }
