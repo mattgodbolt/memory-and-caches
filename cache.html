@@ -97,46 +97,43 @@
     const setWidth = muxWidth / numSets;
     // noinspection JSSuspiciousNameCombination
     const setHeight = setWidth;
-    let highlightedSet = -1;
+    let highlightedSet = 1;
 
     function updateSets(root) {
         const setData = [];
         for (let i = 0; i < numSets; ++i)
-            setData[i] = i === highlightedSet;
-        const wayData = [];
-        for (let i = 0; i < numWays; ++i)
-            wayData[i] = false;
+            setData[i] = {
+                highlight: i === highlightedSet,
+                ways: Array(numWays).fill(i === highlightedSet)
+            };
         const sets = root.selectAll('.set')
             .data(setData);
-        const group = sets
-            .enter()
+        sets.enter()
             .append("g")
             .attr("class", "set")
-            .attr("transform", (d, i) => `translate(${setWidth * i}, ${muxHeight})`);
-        sets.exit().remove();
-        group
+            .attr("transform", (d, i) => `translate(${setWidth * i}, ${muxHeight})`)
             .append("line")
             .attr("x1", setWidth / 2)
             .attr("x2", setWidth / 2)
             .attr("y1", 0)
             .attr("y2", muxLineHeight)
             .attr('marker-end', 'url(#head)');
-        group
-            .selectAll(".way")
-            .data(wayData)
-            .enter().append("g")
-            .attr("transform", (d, i) => `translate(0, ${muxLineHeight + i * setHeight})`)
-            .append("rect")
-            .attr("width", setWidth)
-            .attr("height", setHeight)
-            .attr("class", "way");
+        sets.exit().remove();
 
-        sets
-            .transition()
-            .attr("class", (d) => {
-                console.log(d);
-                return d ? "set highlight" : "set";
-            });
+        const ways = sets
+            .selectAll("rect")
+            .data((d) => d.ways);
+        ways.exit().remove();
+
+        const rects = ways.enter()
+            .append("rect")
+            .attr("class", "way")
+            .attr("y", (d, i) => muxLineHeight + i * setHeight)
+            .attr("width", setWidth)
+            .attr("height", setHeight);
+        const t = d3.transition().duration(300);
+        rects.merge(ways).transition(t)
+            .style('fill', d => d ? 'darkcyan' : 'black');
     }
 
     function muxAndSets(x, y, name) {
