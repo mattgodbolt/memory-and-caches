@@ -71,7 +71,12 @@
 <script>
     let doc = {
         highlightedSet: -1,
-        setPartHighlighted: false
+        setPartHighlighted: false,
+        tagPartHighlighted: false,
+        muxTagHighlighted: false,
+        dataTagHighlighted: false,
+        wayOrHighlight: -1,
+        wayCompHighlight: -1
     };
 
     const numSets = 4;
@@ -114,7 +119,7 @@
     // noinspection JSSuspiciousNameCombination
     const setHeight = setWidth;
 
-    function updateSets(root) {
+    function updateSets(root, hlFill) {
         const setData = [];
         for (let i = 0; i < numSets; ++i)
             setData[i] = {
@@ -151,7 +156,7 @@
             .attr("width", setWidth)
             .attr("height", setHeight);
         rects.merge(ways).transition(trans)
-            .style('fill', d => d ? 'darkcyan' : 'black');
+            .style('fill', d => d ? hlFill : 'black');
     }
 
     function muxAndSets(x, y, name) {
@@ -173,7 +178,7 @@
             .attr("dy", "0.35em")
             .text(name);
 
-        updateSets(mux);
+        updateSets(mux, "black"); // TODO why needed
         return mux;
     }
 
@@ -198,7 +203,6 @@
         .attr("marker-end", "url(#head)");
 
     // Comparator and data lines
-    const tagLines = svg.append("g").attr("class", "tag");
     const muxEdgeX = -width / 2 + muxWidth;
     const dataEdgeX = width / 2 - muxWidth;
     const gapToFirstElem = 100;
@@ -213,58 +217,126 @@
     const orGateOverlap = (allElemSpace - orGateWidth) / numWays;
     const orMid = dataEdgeX - gapToFirstElem - orGateWidth - orGateOverlap * numWays / 2;
 
-    for (let j = 0; j < numWays; ++j) {
-        const tagComplex = tagLines.append("g");
-        const tagCentreY = muxTop + muxHeight + muxLineHeight + j * setHeight + setHeight / 2;
-        const compLeft = muxEdgeX + gapToFirstElem + comparatorOverlap * j;
-        tagComplex.append("path")
-            .attr("d", `M${muxEdgeX} ${tagCentreY} H${compLeft}`)
-            .attr("marker-end", "url(#head)");
-        const comparator = tagComplex.append("g")
-            .attr("transform", `translate(${compLeft},${tagCentreY - comparatorHeight / 2})`);
-        comparator.append("rect")
-            .attr("width", comparatorWidth)
-            .attr("height", comparatorHeight);
-        comparator.append("text")
-            .attr("x", comparatorWidth / 2)
-            .attr("y", comparatorHeight / 2)
-            .attr("class", "comparator")
-            .attr("dy", "0.35em")
-            .text("Comp");
+    const tagStartMidX = -allBoxWidth / 2 + boxWidth / 2;
 
-        const orLeft = dataEdgeX - gapToFirstElem - orGateWidth - orGateOverlap * j;
-        const orGateConnector = 10;
-        const orComplex = tagLines.append("g");
-        orComplex.append("path")
-            .attr("d", `M${dataEdgeX} ${tagCentreY} H${orLeft + orGateWidth - orGateConnector} v${orGateDown}`)
-            .attr("marker-end", "url(#head)");
-        orComplex.append("path")
-            .attr("d", `M${compLeft + comparatorWidth} ${tagCentreY} H${orLeft + orGateConnector} v${orGateDown}`)
-            .attr("marker-end", "url(#head)");
-        const orTop = orGateDown + tagCentreY;
-        const curveness = orGateHeight / 0.78;
-        orComplex.append("path")
-            .attr("d", `M${orLeft} ${orTop} h${orGateWidth} c0 ${curveness} ${-orGateWidth} ${curveness} ${-orGateWidth} 0`);
-        orComplex.append("path")
-            .attr("d", `M${orLeft + orGateWidth / 2} ${orTop + orGateHeight} V${dataBottom} H${orMid}`);
+    const waysRoot = svg.append("g").attr("class", "wayRoot");
+
+    function doWays() {
+        const wayConfig = [];
+        for (let i = 0; i < numWays; ++i) {
+            wayConfig.push({
+                comp: i === doc.wayCompHighlight,
+                or: i === doc.wayOrHighlight
+            });
+        }
+        const tagComplex = waysRoot.selectAll("g.wayRoot")
+            .data(wayConfig);
+        tagComplex.exit().remove();
+        const merged = tagComplex.enter()
+            .append("g").attr("class", "tag wayRoot")
+            .each(((d, i, nodes) => {
+                const tagCentreY = muxTop + muxHeight + muxLineHeight + i * setHeight + setHeight / 2;
+                const compLeft = muxEdgeX + gapToFirstElem + comparatorOverlap * i;
+                const tagComplex = d3.select(nodes[i]);
+                tagComplex
+                    .append("path")
+                    .attr("class", "mux-tag")
+                    .attr("d", `M${muxEdgeX} ${tagCentreY} H${compLeft}`)
+                    .attr("marker-end", "url(#head)");
+                tagComplex.append("path")
+                    .attr("d", `M${tagStartMidX} ${boxHeight} V${muxTop + muxHeight / 2} H${compLeft + comparatorWidth - 10} V${tagCentreY - comparatorHeight / 2}`)
+                    .attr("class", "tag-line")
+                    .attr("marker-end", "url(#head)");
+                const comparator = tagComplex.append("g")
+                    .attr("transform", `translate(${compLeft},${tagCentreY - comparatorHeight / 2})`);
+                comparator.append("rect")
+                    .attr("class", "comparator")
+                    .attr("width", comparatorWidth)
+                    .attr("height", comparatorHeight);
+                comparator.append("text")
+                    .attr("x", comparatorWidth / 2)
+                    .attr("y", comparatorHeight / 2)
+                    .attr("class", "comparator")
+                    .attr("dy", "0.35em")
+                    .text("Comp");
+
+                const orLeft = dataEdgeX - gapToFirstElem - orGateWidth - orGateOverlap * i;
+                const orGateConnector = 10;
+                const orComplex = tagComplex.append("g");
+                orComplex.append("path")
+                    .attr("class", "data-tag")
+                    .attr("d", `M${dataEdgeX} ${tagCentreY} H${orLeft + orGateWidth - orGateConnector} v${orGateDown}`)
+                    .attr("marker-end", "url(#head)");
+                orComplex.append("path")
+                    .attr("class", "comp-to-or")
+                    .attr("d", `M${compLeft + comparatorWidth} ${tagCentreY} H${orLeft + orGateConnector} v${orGateDown}`)
+                    .attr("marker-end", "url(#head)");
+                const orTop = orGateDown + tagCentreY;
+                const curveness = orGateHeight / 0.78;
+                orComplex.append("path")
+                    .attr("d", `M${orLeft} ${orTop} h${orGateWidth} c0 ${curveness} ${-orGateWidth} ${curveness} ${-orGateWidth} 0`)
+                    .attr("class", "or-gate");
+                orComplex.append("path")
+                    .attr("class", "or-gate-out")
+                    .attr("d", `M${orLeft + orGateWidth / 2} ${orTop + orGateHeight} V${dataBottom} H${orMid}`);
+
+            }))
+            .merge(tagComplex);
+        merged.select("rect.comparator")
+            .transition(trans)
+            .attr("fill", d => d.comp ? "goldenrod" : "black");
+        merged.select("path.comp-to-or")
+            .transition(trans)
+            .attr("stroke-width", d => d.comp ? 4 : 2)
+            .attr("stroke", d => d.comp ? "goldenrod" : "white");
+        merged.select("path.or-gate")
+            .transition(trans)
+            .attr("fill", d => d.or ? "purple" : "black");
+        merged.select("path.or-gate-out")
+            .transition(trans)
+            .attr("stroke-width", d => d.or ? 4 : 2)
+            .attr("stroke", d => d.or ? "purple" : "white");
     }
-    const outputComplex = tagLines.append("g")
+
+    const outputComplex = svg.append("g")
         .append("path")
         .attr("d", `M${orMid} ${dataBottom} v50`)
         .attr("marker-end", "url(#head)");
 
     function update() {
-        updateSets(tagMux);
-        updateSets(dataMux);
+        updateSets(tagMux, "darkred");
+        updateSets(dataMux, "purple");
 
         setLines.selectAll("path")
             .transition(trans)
-            .attr("stroke-width", doc.setPartHighlighted ? 6 : 2)
+            .attr("stroke-width", doc.setPartHighlighted ? 4 : 2)
             .attr("stroke", doc.setPartHighlighted ? "darkcyan" : "white");
 
         d3.selectAll(".mux-box")
             .transition(trans)
             .attr("fill", doc.setPartHighlighted ? "darkcyan" : "black");
+
+        d3.selectAll("path.tag-line")
+            .transition(trans)
+            .attr("stroke-width", doc.tagPartHighlighted ? 4 : 2)
+            .attr("stroke", doc.tagPartHighlighted ? "darkred" : "white");
+
+        d3.selectAll("path.mux-tag")
+            .transition(trans)
+            .attr("stroke-width", doc.muxTagHighlighted ? 4 : 2)
+            .attr("stroke", doc.muxTagHighlighted ? "darkred" : "white");
+
+        d3.selectAll("path.data-tag")
+            .transition(trans)
+            .attr("stroke-width", doc.dataTagHighlighted ? 4 : 2)
+            .attr("stroke", doc.dataTagHighlighted ? "purple" : "white");
+
+        doWays();
+
+        outputComplex
+            .transition(trans)
+            .attr("stroke-width", doc.wayOrHighlight >= 0 ? 4 : 2)
+            .attr("stroke", doc.wayOrHighlight >= 0 ? "purple" : "white");
     }
 
     update();
