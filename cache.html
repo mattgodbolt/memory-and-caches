@@ -341,6 +341,20 @@
 
     update();
 
+    // Has to be a 'var' else things go badly in d3slideshow
+    var _transitions = [
+        {
+            transitionForward: () => {
+                doc.setPartHighlighted = true;
+                update();
+            },
+            transitionBackward: () => {
+                doc.setPartHighlighted = false;
+                update();
+            }
+        },
+        {}
+    ];
 </script>
 </body>
 </html>
