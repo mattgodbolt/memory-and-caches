@@ -476,7 +476,9 @@ int Cache::readByte(uint64_t addr) const {
             </section>
             <section>
                 <h2>Caching</h2>
-                <div class="fig-container" style="height: 800px" data-file="cache.html"></div>
+                <div class="fig-container" xstyle="height:600px; width:1240px;"
+                     data-xstyle="height: 600px; width=1240px;"
+                     data-file="cache.html"></div>
             </section>
             <section>
                 <h2>Timings</h2>
@@ -605,6 +607,32 @@ int Cache::readByte(uint64_t addr) const {
                         </ul>
                     </li>
                 </ul>
+            </section>
+            <section>
+                <h2>Real-world measurements</h2>
+                <h5>Random</h5>
+                <svg width="500" height="150">
+                    <rect class="elem" x="0" y="50" width="100" height="40"/>
+                    <rect class="elem" x="100" y="50" width="100" height="40"/>
+                    <rect class="elem" x="200" y="50" width="100" height="40"/>
+                    <rect class="elem" x="300" y="50" width="100" height="40"/>
+                    <rect class="elem" x="400" y="50" width="100" height="40"/>
+                    <path marker-end='url(#head)' class="fragment"
+                          stroke-width='5' fill='none' stroke='red'
+                          d="M5 50 c20 -10, 380 -20, 395 0"/>
+                    <path marker-end='url(#head)' class="fragment"
+                          stroke-width='5' fill='none' stroke='red'
+                          d="M405 90 c20 10, -185 20, -195 0"/>
+                    <path marker-end='url(#head)' class="fragment"
+                          stroke-width='5' fill='none' stroke='red'
+                          d="M205 50 c20 -10, 80 -20, 95 0"/>
+                    <path marker-end='url(#head)' class="fragment"
+                          stroke-width='5' fill='none' stroke='red'
+                          d="M305 90 c20 10, -180 20, -195 0"/>
+                    <path marker-end='url(#head)' class="fragment"
+                          stroke-width='5' fill='none' stroke='red'
+                          d="M105 90 c20 10, -80 20, -95 0"/>
+                </svg>
             </section>
             <section>
                 <h2>Sequential vs Random Reads</h2>
@@ -781,6 +809,9 @@ int Cache::readByte(uint64_t addr) const {
         slideNumber: true,
         width: 1280,
         height: 720,
+        reveald3: {
+            runLastState: false
+        },
         dependencies: [
             {src: 'reveal.js/plugin/markdown/marked.js'},
             {src: 'reveal.js/plugin/markdown/markdown.js'},

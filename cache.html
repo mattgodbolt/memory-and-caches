@@ -10,6 +10,12 @@
     <link rel="stylesheet" href="reveal.js/css/theme/league.css">
 
     <style>
+        body {
+            background: transparent;
+            margin-top: 10px;
+            text-align: center;
+        }
+
         .box {
             text-anchor: middle;
             font: bold 26px Serif;
@@ -84,7 +90,7 @@
 
     const trans = d3.transition().duration(300);
 
-    const width = 1200, height = 800;
+    const width = 1200, height = 600;
     const svg = d3.select("body").append("svg")
         .attr("width", width)
         .attr("height", height)
@@ -341,19 +347,36 @@
 
     update();
 
+    function upd(func) {
+        return () => {
+            func();
+            update();
+        }
+    }
+
+    function change(name, to) {
+        let prev;
+        return {
+            transitionForward: upd(() => {
+                prev = doc[name];
+                doc[name] = to;
+            }),
+            transitionBackward: upd(() => {
+                doc[name] = prev;
+            })
+        };
+    }
+
+
     // Has to be a 'var' else things go badly in d3slideshow
     var _transitions = [
-        {
-            transitionForward: () => {
-                doc.setPartHighlighted = true;
-                update();
-            },
-            transitionBackward: () => {
-                doc.setPartHighlighted = false;
-                update();
-            }
-        },
-        {}
+        change('setPartHighlighted', true),
+        change('highlightedSet', 2),
+        change('muxTagHighlighted', true),
+        change('dataTagHighlighted', true),
+        change('tagPartHighlighted', true),
+        change('wayCompHighlight', 3),
+        change('wayOrHighlight', 3),
     ];
 </script>
 </body>
