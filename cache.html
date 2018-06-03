@@ -61,6 +61,21 @@
             alignment-baseline: center;
         }
 
+        .svg-container {
+            display: inline-block;
+            position: relative;
+            width: 100%;
+            padding-bottom: 100%; /* aspect ratio */
+            vertical-align: top;
+            overflow: hidden;
+        }
+
+        .svg-content-responsive {
+            display: inline-block;
+            position: absolute;
+            top: 10px;
+            left: 0;
+        }
     </style>
 
 </head>
@@ -91,11 +106,15 @@
     const trans = d3.transition().duration(300);
 
     const width = 1200, height = 600;
-    const svg = d3.select("body").append("svg")
-        .attr("width", width)
-        .attr("height", height)
+    // https://stackoverflow.com/questions/16265123/resize-svg-when-window-is-resized-in-d3-js
+    const svg = d3.select("body")
+        .append("div").classed("svg-container", true)
+        .append("svg")
+        .attr("preserveAspectRatio", "xMinYMin meet")
+        .attr("viewBox", `0 0 ${width} ${height}`)
         .append("g")
-        .attr("transform", `translate(${width / 2}, 0)`);
+        .attr("transform", `matrix(${1} 0 0 ${1} ${width / 2} 0)`);
+
     const boxWidth = 150;
     const boxHeight = 40;
 
