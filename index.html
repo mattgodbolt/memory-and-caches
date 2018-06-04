@@ -216,7 +216,6 @@
         </section>
         <section>
             <section>
-                <!-- TODO more work here -->
                 <h2>1 Bit of Dynamic RAM</h2>
                 <img src="dynamic-ram.png" width="784px">
             </section>
@@ -235,11 +234,15 @@
                     <li>It's analogue!
                         <ul>
                             <li>Needs ADC</li>
-                            <li>Takes time to charge/dischard</li>
+                            <li>Takes time to charge/discharge</li>
                         </ul>
                     </li>
                     <li>External chips</li>
                 </ul>
+            </section>
+            <section>
+                <h2>Array of Dynamic RAM</h2>
+                <img src="ram-bank.png" class="stretch">
             </section>
             <section>
                 <h2>Reading from DRAM (short version)</h2>
@@ -480,6 +483,16 @@ int Cache::readByte(uint64_t addr) const {
                      data-file="cache.html"></div>
             </section>
             <section>
+                <h2>Layers</h2>
+                <ul>
+                    <li>Physical proximity important</li>
+                    <li>Caches layered: L1, L2, L3</li>
+                    <li>Lower-numbered cache smaller, nearer, faster</li>
+                    <li>L3 shared (x86)</li>
+                    <li>Inclusive/exclusive</li>
+                </ul>
+            </section>
+            <section>
                 <h2>Timings</h2>
                 <h5>Approximate for Sandy Bridge</h5>
                 <table>
@@ -513,14 +526,6 @@ int Cache::readByte(uint64_t addr) const {
                     </tr>
                     </tbody>
                 </table>
-            </section>
-            <section>Cache hierarchy? Layers? Inclusivity, exclusivity?
-            </section>
-            <section>
-                <h2>Changes soon</h2>
-                Newer Intel chips to have bigger L2s
-                Skylake-X exclusive L3,
-                <!-- TODO -->
             </section>
         </section>
         <section>

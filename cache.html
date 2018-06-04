@@ -235,12 +235,12 @@
     const comparatorWidth = 80;
     const comparatorHeight = setHeight * 0.8;
     const comparatorOverlap = (allElemSpace - comparatorWidth) / numWays;
-    const orGateDown = 15;
-    const orGateWidth = 50;
-    const orGateHeight = setHeight * 0.5;
+    const andGateDown = 15;
+    const andGateWidth = 50;
+    const andGateHeight = setHeight * 0.5;
     const dataBottom = muxTop + muxHeight + muxLineHeight + (numWays + 1) * setHeight;
-    const orGateOverlap = (allElemSpace - orGateWidth) / numWays;
-    const orMid = dataEdgeX - gapToFirstElem - orGateWidth - orGateOverlap * numWays / 2;
+    const andGateOverlap = (allElemSpace - andGateWidth) / numWays;
+    const andMid = dataEdgeX - gapToFirstElem - andGateWidth - andGateOverlap * numWays / 2;
 
     const tagStartMidX = -allBoxWidth / 2 + boxWidth / 2;
 
@@ -251,7 +251,7 @@
         for (let i = 0; i < numWays; ++i) {
             wayConfig.push({
                 comp: i === doc.wayCompHighlight,
-                or: i === doc.wayOrHighlight
+                and: i === doc.wayOrHighlight
             });
         }
         const tagComplex = waysRoot.selectAll("g.wayRoot")
@@ -285,47 +285,47 @@
                     .attr("dy", "0.35em")
                     .text("Comp");
 
-                const orLeft = dataEdgeX - gapToFirstElem - orGateWidth - orGateOverlap * i;
-                const orGateConnector = 10;
-                const orComplex = tagComplex.append("g");
-                orComplex.append("path")
+                const andLeft = dataEdgeX - gapToFirstElem - andGateWidth - andGateOverlap * i;
+                const andGateConnector = 10;
+                const andComplex = tagComplex.append("g");
+                andComplex.append("path")
                     .attr("class", "data-tag")
-                    .attr("d", `M${dataEdgeX} ${tagCentreY} H${orLeft + orGateWidth - orGateConnector} v${orGateDown}`)
+                    .attr("d", `M${dataEdgeX} ${tagCentreY} H${andLeft + andGateWidth - andGateConnector} v${andGateDown}`)
                     .attr("marker-end", "url(#head)");
-                orComplex.append("path")
-                    .attr("class", "comp-to-or")
-                    .attr("d", `M${compLeft + comparatorWidth} ${tagCentreY} H${orLeft + orGateConnector} v${orGateDown}`)
+                andComplex.append("path")
+                    .attr("class", "comp-to-and")
+                    .attr("d", `M${compLeft + comparatorWidth} ${tagCentreY} H${andLeft + andGateConnector} v${andGateDown}`)
                     .attr("marker-end", "url(#head)");
-                const orTop = orGateDown + tagCentreY;
-                const curveness = orGateHeight / 0.78;
-                orComplex.append("path")
-                    .attr("d", `M${orLeft} ${orTop} h${orGateWidth} c0 ${curveness} ${-orGateWidth} ${curveness} ${-orGateWidth} 0`)
-                    .attr("class", "or-gate");
-                orComplex.append("path")
-                    .attr("class", "or-gate-out")
-                    .attr("d", `M${orLeft + orGateWidth / 2} ${orTop + orGateHeight} V${dataBottom} H${orMid}`);
+                const orTop = andGateDown + tagCentreY;
+                const curveness = andGateHeight / 0.78;
+                andComplex.append("path")
+                    .attr("d", `M${andLeft} ${orTop} h${andGateWidth} c0 ${curveness} ${-andGateWidth} ${curveness} ${-andGateWidth} 0`)
+                    .attr("class", "and-gate");
+                andComplex.append("path")
+                    .attr("class", "and-gate-out")
+                    .attr("d", `M${andLeft + andGateWidth / 2} ${orTop + andGateHeight} V${dataBottom} H${andMid}`);
 
             }))
             .merge(tagComplex);
         merged.select("rect.comparator")
             .transition(trans)
             .attr("fill", d => d.comp ? "goldenrod" : "black");
-        merged.select("path.comp-to-or")
+        merged.select("path.comp-to-and")
             .transition(trans)
             .attr("stroke-width", d => d.comp ? 4 : 2)
             .attr("stroke", d => d.comp ? "goldenrod" : "white");
-        merged.select("path.or-gate")
+        merged.select("path.and-gate")
             .transition(trans)
-            .attr("fill", d => d.or ? "purple" : "black");
-        merged.select("path.or-gate-out")
+            .attr("fill", d => d.and ? "purple" : "black");
+        merged.select("path.and-gate-out")
             .transition(trans)
-            .attr("stroke-width", d => d.or ? 4 : 2)
-            .attr("stroke", d => d.or ? "purple" : "white");
+            .attr("stroke-width", d => d.and ? 4 : 2)
+            .attr("stroke", d => d.and ? "purple" : "white");
     }
 
     const outputComplex = svg.append("g")
         .append("path")
-        .attr("d", `M${orMid} ${dataBottom} v50`)
+        .attr("d", `M${andMid} ${dataBottom} v50`)
         .attr("marker-end", "url(#head)");
 
     function update() {
