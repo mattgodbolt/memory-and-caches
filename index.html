@@ -112,7 +112,7 @@
         </section>
         <section
                 data-background-image="RAM-sheep.png"
-                data-background-size="200px"
+                data-background-size="300px"
                 data-background-position="bottom right">
             <h2>Types of RAM</h2>
             <ul>
@@ -199,7 +199,7 @@
             </section>
             <section
                     data-background-image="cache-ram.png"
-                    data-background-size="300px"
+                    data-background-size="500px"
                     data-background-position="top right">
                 <h2>Static RAM</h2>
                 <ul>
@@ -326,7 +326,7 @@
             </section>
             <section
                     data-background-image="NUMA-node-controller.png"
-                    data-background-size="300px"
+                    data-background-size="500px"
                     data-background-position="top right">
                 <h2>Memory Controller</h2>
                 <ul>
@@ -340,6 +340,7 @@
                     Image source: <a href="https://lwn.net/Articles/250967/">Ulrich Drepper</a>
                 </div>
             </section>
+            <!-- TODO: rowhammer? -->
             <section>
                 <h2>Getting DRAM data out</h2>
                 <ul>
@@ -373,7 +374,7 @@
                 </ul>
             </section>
             <section data-background-image="sherlock.png"
-                     data-background-size="200px"
+                     data-background-size="300px"
                      data-background-position="bottom right">
                 <h2>Cache entries</h2>
                 <ul>
@@ -391,7 +392,7 @@
                 </ul>
             </section>
             <section data-background-image="sherlock.png"
-                     data-background-size="200px"
+                     data-background-size="300px"
                      data-background-position="bottom right">
                 <h2>Cache entries</h2>
                 <table class="cache">
@@ -413,7 +414,7 @@
                 </table>
             </section>
             <section data-background-image="sherlock2.png"
-                     data-background-size="200px"
+                     data-background-size="300px"
                      data-background-position="bottom right">
                 <h2>Cache lookup</h2>
                 <ul>
@@ -424,7 +425,7 @@
                 </ul>
             </section>
             <section data-background-image="sherlock2.png"
-                     data-background-size="200px"
+                     data-background-size="300px"
                      data-background-position="bottom right">
                 <h2>Cache lookup</h2>
                 <pre><code class="cpp" data-trim>
@@ -445,7 +446,7 @@ struct Cache { Set sets[NumSets]; };
                 </code></pre>
             </section>
             <section data-background-image="sherlock2.png"
-                     data-background-size="200px"
+                     data-background-size="300px"
                      data-background-position="bottom right">
                 <h2>Cache lookup</h2>
                 <pre><code class="cpp" data-trim data-noescape>
@@ -456,10 +457,10 @@ int Cache::readByte(uint64_t addr) const {
 <div class="fragment highlight-current-code">  constexpr auto SetMask = (1u << NumSetBits) - 1u;
   const Set &set = sets[(addr &gt;&gt; NumLineBits) &amp; SetMask];
 </div>
-<div class="fragment highlight-current-code">  constexpr auto TagMask = (1u << (NumLineBits + NumSetBits)) - 1u;
+<div class="fragment highlight-current-code">  constexpr auto TagMask = ~((1u << (NumLineBits + NumSetBits)) - 1u);
   auto tag = addr &amp; TagMask;
 </div>
-<div class="fragment highlight-current-code">  for (const auto &way : set.ways)
+<div class="fragment highlight-current-code">  for (const auto &amp;way : set.ways)
 </div>    if (<span class="fragment highlight-current-code">way.tag == tag</span>) <span
                         class="fragment highlight-current-code">return way.line.data[lineOffset];
 </span>
@@ -468,7 +469,7 @@ int Cache::readByte(uint64_t addr) const {
                 </code></pre>
             </section>
             <section data-background-image="sherlock2.png"
-                     data-background-size="200px"
+                     data-background-size="300px"
                      data-background-position="bottom right">
                 <h2>We just implemented a bad hash map!</h2>
                 <ul>
