@@ -226,18 +226,18 @@
                 <h2>Dynamic RAM</h2>
                 <ul>
                     <li>One transistor per bit</li>
-                    <li>Leaks charge
+                    <li class="fragment">Leaks charge
                         <ul>
                             <li>Requires refresh</li>
                         </ul>
                     </li>
-                    <li>It's analogue!
+                    <li class="fragment">It's analogue!
                         <ul>
                             <li>Needs ADC</li>
                             <li>Takes time to charge/discharge</li>
                         </ul>
                     </li>
-                    <li>External chips</li>
+                    <li class="fragment">Used in external chips</li>
                 </ul>
             </section>
             <section>
@@ -652,8 +652,8 @@ int Cache::readByte(uint64_t addr) const {
                             <li>Prefetching can hurt</li>
                         </ul>
                     </li>
-                    <li>Linear scan 5x faster</li>
-                    <li><code>prefetch</code> is available
+                    <li class="fragment">Linear scan 5x faster</li>
+                    <li class="fragment"><code>prefetch</code> is available
                         <ul class="fragment">
                             <li>Hard to get right</li>
                             <li>Overrides Critical Word Load</li>
@@ -675,9 +675,11 @@ int Cache::readByte(uint64_t addr) const {
                 <h2>Virtual memory</h2>
                 <ul>
                     <li>How do virtual address fit into this?</li>
-                    <li>Page tables require 4 reads to walk:</li>
+                    <li class="fragment">Page tables require 4 reads to walk:</li>
                 </ul>
-                <img src="page-tables.png" class="stretch">
+                <div class="fragment">
+                    <img src="page-tables.png" class="stretch">
+                </div>
             </section>
             <section>
                 <h2>TLBs</h2>
