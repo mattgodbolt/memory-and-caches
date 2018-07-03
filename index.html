@@ -23,6 +23,12 @@
             color: #ffffff;
         }
 
+        .zomg {
+            text-align: center;
+            color: lightcoral !important;
+            text-shadow: 3px 3px black !important;
+        }
+
         section .row:before,
         section .row:after {
             content: "";
@@ -209,8 +215,7 @@
                     <li>Repeating layout</li>
                     <li>&lt;1ns access times</li>
                     <li class="fragment">Why not make all RAM this way?<br>
-                        <h2 class="fragment"
-                            style="text-align: center; color: darkred;">COST!</h2></li>
+                        <h2 class="fragment zomg">COST &amp; POWER!</h2></li>
                 </ul>
             </section>
         </section>
@@ -225,8 +230,19 @@
                     data-background-position="bottom right">
                 <h2>Dynamic RAM</h2>
                 <ul>
-                    <li>One transistor per bit</li>
-                    <li class="fragment">Leaks charge
+                    <li>1 transistor &amp; 1 capacitor per bit</li>
+                    <li>Simple repeating layout</li>
+                    <li>No power needed unless active</li>
+                    <li class="fragment">So what's the catch?</li>
+                </ul>
+            </section>
+            <section
+                    data-background-image="dynamic-ram-sheep.png"
+                    data-background-size="400px"
+                    data-background-position="bottom right">
+                <h2>Dynamic RAM drawbacks</h2>
+                <ul>
+                    <li class="fragment">Capacitor leaks charge
                         <ul>
                             <li>Requires refresh</li>
                         </ul>
@@ -235,6 +251,11 @@
                         <ul>
                             <li>Needs ADC</li>
                             <li>Takes time to charge/discharge</li>
+                        </ul>
+                    </li>
+                    <li class="fragment">Chance of crosstalk
+                        <ul>
+                            <li>Row hammer attack!</li>
                         </ul>
                     </li>
                     <li class="fragment">Used in external chips</li>
@@ -358,7 +379,7 @@
                     <li>Fourth word: 11.67ns</li>
                     <li>Eighth word: 13.00ns</li>
                 </ul>
-                <h2 class="fragment" style="text-align: center; color: darkred;">Access times can dominate over data
+                <h2 class="fragment zomg">Access times can dominate over data
                     rates</h2>
             </section>
         </section>
