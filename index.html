@@ -294,10 +294,30 @@
                                   rx="10px" ry="10px"
                                   width="77.5%" height="7.5%"/>
                             <rect class="fragment hl current-visible"
+                                  data-fragment-index="1"
+                                  x="27.5%" y="5%"
+                                  rx="5px" ry="5px"
+                                  width="3%" height="60%"/>
+                            <rect class="fragment hl current-visible"
+                                  data-fragment-index="1"
+                                  x="44.0%" y="5%"
+                                  rx="5px" ry="5px"
+                                  width="3%" height="60%"/>
+                            <rect class="fragment hl current-visible"
+                                  data-fragment-index="1"
+                                  x="60.5%" y="5%"
+                                  rx="5px" ry="5px"
+                                  width="3%" height="60%"/>
+                            <rect class="fragment hl current-visible"
+                                  data-fragment-index="1"
+                                  x="76.0%" y="5%"
+                                  rx="5px" ry="5px"
+                                  width="3%" height="60%"/>
+                            <rect class="fragment hl current-visible"
                                   data-fragment-index="2"
-                                  x="22%" y="58%"
+                                  x="22%" y="16%"
                                   rx="10px" ry="10px"
-                                  width="77.5%" height="7.5%"/>
+                                  width="63.5%" height="3%"/>
                             <rect class="fragment hl current-visible"
                                   data-fragment-index="2"
                                   x="17%" y="0%"
@@ -570,7 +590,7 @@ int Cache::readByte(uint64_t addr) const {
                 <pre><code class="cpp" data-noescape data-trim>
                     struct Element {
                       Element *next;
-                      uint8_t padding[ElementSize];
+                      uint8_t padding[ElementSize - sizeof(Element *)];
                     };
 
                     Element elements[NumElements];
