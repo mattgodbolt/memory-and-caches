@@ -1,7 +1,7 @@
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-//#include <malloc.h>
+#include <cstdio>
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
 #include <sys/mman.h>
 
 struct Elem {
@@ -9,17 +9,19 @@ struct Elem {
     uint64_t value;
 };
 
-const bool randomize = true;
-const bool hugePages = true;
+bool write = false;
+bool randomize = false;
+bool hugePages = false;
 const size_t log2MaxElemSize = 12;
 size_t log2MaxWorkingSet = 28;
 
-static void visit(Elem* elem) {
-    static uint64_t total = 0;
-    //elem->value = 0;
-    //total += elem->value;
-    //elem->value++;
+static void visitRead(Elem* elem) {
     asm ("":"=m"(*elem));
+}
+
+static uint64_t visitWrite(Elem* elem) {
+    elem->value++;
+    return elem->value;
 }
 
 inline uint64_t ReadInitialTSC() {
@@ -86,12 +88,22 @@ Elem* initialize(size_t elemSize, size_t numElems) {
     return (Elem*) theMemory;
 }
 
+volatile uint64_t ensure_written = 0;
 void runThrough(Elem* first, size_t nElem) __attribute__((noinline));
 void runThrough(Elem* first, size_t nElem) {
     Elem* p = first;
-    while (nElem--) {
-        visit(p);
-        p = p->next;
+    if (!write) {
+        while (nElem--) {
+            visitRead(p);
+            p = p->next;
+        }
+    } else {
+        uint64_t total = 0;
+        while (nElem--) {
+            total += visitWrite(p);
+            p = p->next;
+        }
+        ensure_written += total;
     }
     asm ("":::"memory");
 }
@@ -124,6 +136,19 @@ void initMem() {
 
 const int numOuterReps = 4;
 int main(int argc, const char* argv[]) {
+    if (argc >= 2) {
+        hugePages = strcmp(argv[1], "huge") == 0;
+    }
+    if (argc >= 3) {
+        randomize = strcmp(argv[2], "random") == 0;
+    }
+    if (argc >= 4) {
+        write = strcmp(argv[3], "write") == 0;
+    }
+    fprintf(stderr, "Initialised for %s pages, %s order, %s\n", 
+        hugePages ? "huge" : "normal", 
+        randomize ? "random" : "sequential",
+        write ? "write" : "readonly");
     initMem();
 
     uint64_t overheadTime = (uint64_t)-1;
