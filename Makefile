@@ -1,2 +1,2 @@
-memory: memory.c
-	$(CXX) -O3 -o memory memory.c
+memory: memory.cpp
+	$(CXX) -O3 -o memory memory.cpp
