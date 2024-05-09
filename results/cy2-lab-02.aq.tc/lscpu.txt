@@ -13,7 +13,7 @@ CPU family:                      6
 Model:                           85
 Model name:                      Intel(R) Xeon(R) Gold 6144 CPU @ 3.50GHz
 Stepping:                        4
-CPU MHz:                         3361.218
+CPU MHz:                         3170.330
 BogoMIPS:                        7000.00
 Virtualization:                  VT-x
 L1d cache:                       512 KiB
